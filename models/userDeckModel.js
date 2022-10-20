@@ -6,8 +6,10 @@ const userDeckSchema = mongoose.Schema({
     createdAt: Date,
     lastUpdated: Date,
     userId: String,
+    language: String,
     cards: [
         {
+            front: String,
             answer: String,
             createdAt: Date,
             correctAttempts: Number,
