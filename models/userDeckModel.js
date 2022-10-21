@@ -11,6 +11,7 @@ const userDeckSchema = mongoose.Schema({
         {
             front: String,
             answer: String,
+            exampleSentences: [String],
             createdAt: Date,
             correctAttempts: Number,
             incorrectAttempts: Number,

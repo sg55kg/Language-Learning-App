@@ -5,17 +5,46 @@
         <button @click="toggleModal()">Cancel</button>
       </div>
       <div class="modal-body">
-        <input class="create-deck-input" type="text" v-model="newDeck.name" placeholder="Deck Name">
+        <input
+            class="create-deck-input"
+            type="text"
+            v-model="newDeck.name"
+            placeholder="Deck Name"
+        >
         <select class="create-deck-input" v-model="newDeck.language">
           <option value="" disabled>Deck Language</option>
-          <option v-for="language in languages" :key="language" :value="language">{{ language }}</option>
+          <option
+              v-for="language in languages"
+              :key="language"
+              :value="language">
+            {{ language }}
+          </option>
         </select>
         <hr>
         <div class="card-container">
           <h5>Card</h5>
-          <input class="card-input" v-model="newCard.front" type="text" placeholder="Front of Card">
-          <input class="card-input" v-model="newCard.answer" type="text" placeholder="Back (answer)">
-          <button class="add-card-btn" @click="addCard">Add Card</button>
+          <input
+              class="card-input"
+              v-model="newCard.front"
+              type="text"
+              placeholder="Front of Card"
+          >
+          <input
+              class="card-input"
+              v-model="newCard.answer"
+              type="text"
+              placeholder="Back (answer)"
+          >
+          <p
+              v-for="sentence in newCard.exampleSentences"
+              :key="sentence"
+          >
+            {{ sentence }}
+          </p>
+          <input type="text" v-model="exampleSentence" onkeydown="addSentence">
+          <button class="add-card-btn" @click="addCard">
+            Add Card
+          </button>
         </div>
         <button @click="onSubmit">
           Save Deck
@@ -36,6 +65,7 @@ const blankCard = {
   correctAttempts: 0,
   incorrectAttempts: 0,
   nextDateShown: '',
+  exampleSentences: [] as string[]
 }
 
 export default defineComponent({
@@ -62,6 +92,13 @@ export default defineComponent({
       this.$data.newCard = blankCard
       console.log(this.$data.newDeck)
     },
+    addSentence(e: KeyboardEvent) {
+      e.preventDefault()
+      if(e.key === 'Enter') {
+        this.$data.newCard.exampleSentences.push(this.$data.exampleSentence)
+        this.$data.exampleSentence = ''
+      }
+    }
   },
   data() {
     return {
@@ -74,10 +111,12 @@ export default defineComponent({
       newCard: {
         front: '',
         answer: '',
+        exampleSentences: [] as string[],
         correctAttempts: 0,
         incorrectAttempts: 0,
         nextDateShown: '',
       },
+      exampleSentence: '',
       languages: languageList,
       ...mapState(['error'])
     }
