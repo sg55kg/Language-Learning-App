@@ -35,13 +35,24 @@
               type="text"
               placeholder="Back (answer)"
           >
-          <p
-              v-for="sentence in newCard.exampleSentences"
-              :key="sentence"
-          >
-            {{ sentence }}
+          <p v-if="newCard.exampleSentences.length < 1">
+            No example sentences added
           </p>
-          <input type="text" v-model="exampleSentence" onkeydown="addSentence">
+          <div v-else>
+            <p
+                v-for="sentence in newCard.exampleSentences"
+                :key="sentence"
+            >
+              {{ sentence }}
+            </p>
+          </div>
+          <input
+              class="card-input"
+              type="text"
+              v-model="exampleSentence"
+              placeholder="(optional) Enter an example sentence"
+              v-on:keyup.enter="() => addSentence(exampleSentence)"
+          >
           <button class="add-card-btn" @click="addCard">
             Add Card
           </button>
@@ -87,17 +98,24 @@ export default defineComponent({
     },
     addCard(e: MouseEvent) {
       e.preventDefault()
-      console.log(this.$data.newCard)
-      this.$data.newDeck.cards.push({ ...this.$data.newCard })
+      let cardToAdd = { ...this.$data.newCard }
+      if(this.$data.exampleSentence.length > 0) {
+        const sentenceToAdd = this.exampleSentence.trim()
+        cardToAdd.exampleSentences.push(sentenceToAdd)
+      }
+      this.$data.newDeck.cards.push(cardToAdd)
       this.$data.newCard = blankCard
+      this.$data.exampleSentence = ''
       console.log(this.$data.newDeck)
     },
-    addSentence(e: KeyboardEvent) {
-      e.preventDefault()
-      if(e.key === 'Enter') {
-        this.$data.newCard.exampleSentences.push(this.$data.exampleSentence)
-        this.$data.exampleSentence = ''
-      }
+    addSentence(sentenceToAdd: string) {
+      sentenceToAdd = sentenceToAdd.trim()
+      if(sentenceToAdd.length < 1) return
+
+      let updatedCard = { ...this.$data.newCard }
+      updatedCard.exampleSentences.push(sentenceToAdd)
+      this.$data.newCard = updatedCard
+      this.$data.exampleSentence = ''
     }
   },
   data() {
@@ -137,12 +155,15 @@ export default defineComponent({
   }
   .modal {
     width: 60%;
-    height: 60%;
+    height: 70%;
     background: white;
     border: 2px solid black;
     margin: auto;
   }
   .modal-body {
+    max-height: 85%;
+    max-width: 100%;
+    overflow-y: scroll;
     padding: 1em;
   }
   .create-deck-input {
